@@ -250,7 +250,7 @@ export default function SearchPage() {
                 <p className="text-sm text-amber-600">{citySearchError}</p>
               )}
               {!citySearchLoading && !citySearchError && (
-                <ul className="grid grid-cols-3 content-start gap-2 overflow-y-auto">
+                <ul className="flex flex-wrap content-start gap-2 overflow-y-auto">
                   {(cityResults ?? []).length === 0 && (
                     <li className="text-sm text-zinc-400">
                       검색 결과가 없습니다.
@@ -259,10 +259,10 @@ export default function SearchPage() {
                   {(cityResults ?? []).map((s) => (
                     <li
                       key={s.schoolCode}
-                      className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2"
+                      className="flex w-fit items-center justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2"
                     >
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-zinc-900">
+                        <p className="whitespace-nowrap text-sm font-medium text-zinc-900">
                           {s.name}
                         </p>
                         <p className="break-words text-xs text-zinc-400">
@@ -290,17 +290,17 @@ export default function SearchPage() {
                 <p className="text-sm text-amber-600">{schoolsError}</p>
               )}
               {!schoolsLoading && !schoolsError && (
-                <ul className="grid grid-cols-3 content-start gap-2 overflow-y-auto">
+                <ul className="flex flex-wrap content-start gap-2 overflow-y-auto">
                   {schools.length === 0 && (
                     <li className="text-sm text-zinc-400">학교가 없습니다.</li>
                   )}
                   {schools.map((s) => (
                     <li
                       key={s.schoolCode}
-                      className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2"
+                      className="flex w-fit items-center justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2"
                     >
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-zinc-900">
+                        <p className="whitespace-nowrap text-sm font-medium text-zinc-900">
                           {s.name}
                         </p>
                         <p className="break-words text-xs text-zinc-400">
