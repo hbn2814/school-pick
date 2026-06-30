@@ -147,8 +147,8 @@ export default function SearchPage() {
         ))}
       </div>
 
-      <main className="grid flex-1 grid-cols-1 gap-6 p-6 md:grid-cols-2">
-        <section>
+      <main className="grid flex-1 grid-cols-1 gap-6 p-6 md:grid-cols-3">
+        <section className="md:col-span-2">
           <h2 className="mb-3 text-sm font-semibold text-zinc-500">
             서울 25개 구
           </h2>
