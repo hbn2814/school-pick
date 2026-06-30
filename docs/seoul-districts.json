@@ -1,0 +1,127 @@
+[
+  {
+    "name": "종로구",
+    "sggCode": "11110",
+    "sidoCode": "11"
+  },
+  {
+    "name": "중구",
+    "sggCode": "11140",
+    "sidoCode": "11"
+  },
+  {
+    "name": "용산구",
+    "sggCode": "11170",
+    "sidoCode": "11"
+  },
+  {
+    "name": "성동구",
+    "sggCode": "11200",
+    "sidoCode": "11"
+  },
+  {
+    "name": "광진구",
+    "sggCode": "11215",
+    "sidoCode": "11"
+  },
+  {
+    "name": "동대문구",
+    "sggCode": "11230",
+    "sidoCode": "11"
+  },
+  {
+    "name": "중랑구",
+    "sggCode": "11260",
+    "sidoCode": "11"
+  },
+  {
+    "name": "성북구",
+    "sggCode": "11290",
+    "sidoCode": "11"
+  },
+  {
+    "name": "강북구",
+    "sggCode": "11305",
+    "sidoCode": "11"
+  },
+  {
+    "name": "도봉구",
+    "sggCode": "11320",
+    "sidoCode": "11"
+  },
+  {
+    "name": "노원구",
+    "sggCode": "11350",
+    "sidoCode": "11"
+  },
+  {
+    "name": "은평구",
+    "sggCode": "11380",
+    "sidoCode": "11"
+  },
+  {
+    "name": "서대문구",
+    "sggCode": "11410",
+    "sidoCode": "11"
+  },
+  {
+    "name": "마포구",
+    "sggCode": "11440",
+    "sidoCode": "11"
+  },
+  {
+    "name": "양천구",
+    "sggCode": "11470",
+    "sidoCode": "11"
+  },
+  {
+    "name": "강서구",
+    "sggCode": "11500",
+    "sidoCode": "11"
+  },
+  {
+    "name": "구로구",
+    "sggCode": "11530",
+    "sidoCode": "11"
+  },
+  {
+    "name": "금천구",
+    "sggCode": "11545",
+    "sidoCode": "11"
+  },
+  {
+    "name": "영등포구",
+    "sggCode": "11560",
+    "sidoCode": "11"
+  },
+  {
+    "name": "동작구",
+    "sggCode": "11590",
+    "sidoCode": "11"
+  },
+  {
+    "name": "관악구",
+    "sggCode": "11620",
+    "sidoCode": "11"
+  },
+  {
+    "name": "서초구",
+    "sggCode": "11650",
+    "sidoCode": "11"
+  },
+  {
+    "name": "강남구",
+    "sggCode": "11680",
+    "sidoCode": "11"
+  },
+  {
+    "name": "송파구",
+    "sggCode": "11710",
+    "sidoCode": "11"
+  },
+  {
+    "name": "강동구",
+    "sggCode": "11740",
+    "sidoCode": "11"
+  }
+]
