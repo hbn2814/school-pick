@@ -259,7 +259,7 @@ export default function SearchPage() {
                   {(cityResults ?? []).map((s) => (
                     <li
                       key={s.schoolCode}
-                      className="flex w-fit items-center justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2"
+                      className="flex min-w-[160px] items-center justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2"
                     >
                       <div className="min-w-0">
                         <p className="whitespace-nowrap text-sm font-medium text-zinc-900">
@@ -297,7 +297,7 @@ export default function SearchPage() {
                   {schools.map((s) => (
                     <li
                       key={s.schoolCode}
-                      className="flex w-fit items-center justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2"
+                      className="flex min-w-[160px] items-center justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2"
                     >
                       <div className="min-w-0">
                         <p className="whitespace-nowrap text-sm font-medium text-zinc-900">
