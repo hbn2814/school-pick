@@ -216,7 +216,7 @@ export default function SearchPage() {
         />
       </div>
 
-      <main className="grid min-h-0 flex-1 grid-cols-1 gap-6 p-6 md:grid-cols-[5fr_1.3fr]">
+      <main className="grid min-h-0 flex-1 grid-cols-1 gap-6 p-6 md:grid-cols-[3fr_2fr]">
         <section className="flex min-h-0 flex-col">
           <h2 className="mb-3 shrink-0 text-sm font-semibold text-zinc-500">
             서울 25개 구
@@ -250,7 +250,7 @@ export default function SearchPage() {
                 <p className="text-sm text-amber-600">{citySearchError}</p>
               )}
               {!citySearchLoading && !citySearchError && (
-                <ul className="grid grid-cols-2 content-start gap-2 overflow-y-auto">
+                <ul className="grid grid-cols-3 content-start gap-2 overflow-y-auto">
                   {(cityResults ?? []).length === 0 && (
                     <li className="text-sm text-zinc-400">
                       검색 결과가 없습니다.
@@ -265,7 +265,7 @@ export default function SearchPage() {
                         <p className="truncate text-sm font-medium text-zinc-900">
                           {s.name}
                         </p>
-                        <p className="truncate text-xs text-zinc-400">
+                        <p className="break-words text-xs text-zinc-400">
                           {s.districtName}
                         </p>
                       </div>
@@ -290,7 +290,7 @@ export default function SearchPage() {
                 <p className="text-sm text-amber-600">{schoolsError}</p>
               )}
               {!schoolsLoading && !schoolsError && (
-                <ul className="grid grid-cols-2 content-start gap-2 overflow-y-auto">
+                <ul className="grid grid-cols-3 content-start gap-2 overflow-y-auto">
                   {schools.length === 0 && (
                     <li className="text-sm text-zinc-400">학교가 없습니다.</li>
                   )}
@@ -303,7 +303,7 @@ export default function SearchPage() {
                         <p className="truncate text-sm font-medium text-zinc-900">
                           {s.name}
                         </p>
-                        <p className="truncate text-xs text-zinc-400">
+                        <p className="break-words text-xs text-zinc-400">
                           {s.address}
                         </p>
                       </div>
