@@ -216,8 +216,8 @@ export default function SearchPage() {
         />
       </div>
 
-      <main className="grid min-h-0 flex-1 grid-cols-1 gap-6 p-6 md:grid-cols-6">
-        <section className="flex min-h-0 flex-col md:col-span-5">
+      <main className="grid min-h-0 flex-1 grid-cols-1 gap-6 p-6 md:grid-cols-[5fr_1.3fr]">
+        <section className="flex min-h-0 flex-col">
           <h2 className="mb-3 shrink-0 text-sm font-semibold text-zinc-500">
             서울 25개 구
           </h2>
@@ -232,7 +232,7 @@ export default function SearchPage() {
           </div>
         </section>
 
-        <section className="flex min-h-0 flex-col md:col-span-1">
+        <section className="flex min-h-0 flex-col">
           <div className="mb-3 flex shrink-0 items-center gap-2">
             <h2 className="text-sm font-semibold text-zinc-500">
               {isCitySearchActive
@@ -250,7 +250,7 @@ export default function SearchPage() {
                 <p className="text-sm text-amber-600">{citySearchError}</p>
               )}
               {!citySearchLoading && !citySearchError && (
-                <ul className="flex flex-col gap-2 overflow-y-auto">
+                <ul className="grid grid-cols-2 content-start gap-2 overflow-y-auto">
                   {(cityResults ?? []).length === 0 && (
                     <li className="text-sm text-zinc-400">
                       검색 결과가 없습니다.
@@ -290,7 +290,7 @@ export default function SearchPage() {
                 <p className="text-sm text-amber-600">{schoolsError}</p>
               )}
               {!schoolsLoading && !schoolsError && (
-                <ul className="flex flex-col gap-2 overflow-y-auto">
+                <ul className="grid grid-cols-2 content-start gap-2 overflow-y-auto">
                   {schools.length === 0 && (
                     <li className="text-sm text-zinc-400">학교가 없습니다.</li>
                   )}
