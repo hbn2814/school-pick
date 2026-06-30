@@ -53,7 +53,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        await ensureUserDoc(firebaseUser);
+        try {
+          await ensureUserDoc(firebaseUser);
+        } catch (err) {
+          console.error("사용자 문서 동기화 실패:", err);
+        }
       }
       setUser(firebaseUser);
       setLoading(false);

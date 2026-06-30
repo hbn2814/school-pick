@@ -23,8 +23,9 @@ export default function LoginPage() {
     setSigningIn(true);
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch {
-      setError("로그인에 실패했습니다. 다시 시도해 주세요.");
+    } catch (err) {
+      const code = (err as { code?: string })?.code ?? "unknown";
+      setError(`로그인 실패: ${code}`);
     } finally {
       setSigningIn(false);
     }
