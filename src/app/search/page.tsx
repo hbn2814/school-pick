@@ -17,14 +17,29 @@ import { addFavorite, removeFavorite } from "@/lib/favorites";
 import type { SchoolSummary } from "@/app/api/schools/route";
 import SeoulMap from "@/components/SeoulMap";
 
+const KIND_STORAGE_KEY = "schoolpick:selectedKind";
+const SGG_STORAGE_KEY = "schoolpick:selectedSggCode";
+
+function readStoredKind(): SchoolKind {
+  if (typeof window === "undefined") return "middle";
+  const stored = window.sessionStorage.getItem(KIND_STORAGE_KEY);
+  return stored === "high" ? "high" : "middle";
+}
+
+function readStoredDistrict() {
+  if (typeof window === "undefined") return seoulDistricts[0];
+  const storedSgg = window.sessionStorage.getItem(SGG_STORAGE_KEY);
+  return (
+    seoulDistricts.find((d) => d.sggCode === storedSgg) ?? seoulDistricts[0]
+  );
+}
+
 export default function SearchPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  const [kind, setKind] = useState<SchoolKind>("middle");
-  const [selectedDistrict, setSelectedDistrict] = useState(
-    seoulDistricts[0]
-  );
+  const [kind, setKind] = useState<SchoolKind>(readStoredKind);
+  const [selectedDistrict, setSelectedDistrict] = useState(readStoredDistrict);
   const [schools, setSchools] = useState<SchoolSummary[]>([]);
   const [schoolsLoading, setSchoolsLoading] = useState(false);
   const [schoolsError, setSchoolsError] = useState<string | null>(null);
@@ -45,6 +60,15 @@ export default function SearchPage() {
       router.replace("/");
     }
   }, [loading, user, router]);
+
+  useEffect(() => {
+    window.sessionStorage.setItem(KIND_STORAGE_KEY, kind);
+  }, [kind]);
+
+  useEffect(() => {
+    if (!selectedDistrict) return;
+    window.sessionStorage.setItem(SGG_STORAGE_KEY, selectedDistrict.sggCode);
+  }, [selectedDistrict]);
 
   useEffect(() => {
     if (!user) return;
