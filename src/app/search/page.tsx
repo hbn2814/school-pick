@@ -7,7 +7,12 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { seoulDistricts } from "@/data/seoul-districts";
-import { getDistrictSchools, type SchoolKind } from "@/lib/districts";
+import {
+  getDistrictSchools,
+  searchSchoolsCityWide,
+  type SchoolKind,
+  type SchoolWithDistrict,
+} from "@/lib/districts";
 import { addFavorite, removeFavorite } from "@/lib/favorites";
 import type { SchoolSummary } from "@/app/api/schools/route";
 import SeoulMap from "@/components/SeoulMap";
@@ -23,11 +28,17 @@ export default function SearchPage() {
   const [schools, setSchools] = useState<SchoolSummary[]>([]);
   const [schoolsLoading, setSchoolsLoading] = useState(false);
   const [schoolsError, setSchoolsError] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
   const [favorites, setFavorites] = useState<{
     savedMiddle: string[];
     savedHigh: string[];
   }>({ savedMiddle: [], savedHigh: [] });
+
+  const [citySearch, setCitySearch] = useState("");
+  const [cityResults, setCityResults] = useState<SchoolWithDistrict[] | null>(
+    null
+  );
+  const [citySearchLoading, setCitySearchLoading] = useState(false);
+  const [citySearchError, setCitySearchError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -80,10 +91,33 @@ export default function SearchPage() {
     };
   }, [user, selectedDistrict, kind]);
 
-  const filteredSchools = useMemo(() => {
-    if (!query.trim()) return schools;
-    return schools.filter((s) => s.name.includes(query.trim()));
-  }, [schools, query]);
+  useEffect(() => {
+    if (!user) return;
+    const trimmed = citySearch.trim();
+    if (!trimmed) return;
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      setCitySearchLoading(true);
+      setCitySearchError(null);
+      try {
+        const result = await searchSchoolsCityWide(kind, trimmed);
+        if (!cancelled) setCityResults(result);
+      } catch (err) {
+        if (!cancelled) {
+          setCityResults([]);
+          setCitySearchError((err as Error).message);
+        }
+      } finally {
+        if (!cancelled) setCitySearchLoading(false);
+      }
+    }, 400);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [user, kind, citySearch]);
 
   const favoriteSet = useMemo(
     () =>
@@ -108,9 +142,11 @@ export default function SearchPage() {
     );
   }
 
+  const isCitySearchActive = citySearch.trim().length > 0;
+
   return (
-    <div className="flex flex-1 flex-col">
-      <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-4">
+    <div className="flex h-screen flex-col overflow-hidden">
+      <header className="flex shrink-0 items-center justify-between border-b border-zinc-200 px-6 py-4">
         <h1 className="text-lg font-bold text-zinc-900">SchoolPick</h1>
         <div className="flex items-center gap-3">
           <span className="text-sm text-zinc-500">
@@ -131,83 +167,134 @@ export default function SearchPage() {
         </div>
       </header>
 
-      <div className="flex items-center gap-2 border-b border-zinc-200 px-6 py-3">
-        {(["middle", "high"] as const).map((k) => (
-          <button
-            key={k}
-            onClick={() => setKind(k)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium ${
-              kind === k
-                ? "bg-zinc-900 text-white"
-                : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
-            }`}
-          >
-            {k === "middle" ? "중학교" : "고등학교"}
-          </button>
-        ))}
+      <div className="flex shrink-0 items-center justify-between gap-4 border-b border-zinc-200 px-6 py-3">
+        <div className="flex items-center gap-2">
+          {(["middle", "high"] as const).map((k) => (
+            <button
+              key={k}
+              onClick={() => setKind(k)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium ${
+                kind === k
+                  ? "bg-zinc-900 text-white"
+                  : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+              }`}
+            >
+              {k === "middle" ? "중학교" : "고등학교"}
+            </button>
+          ))}
+        </div>
+
+        <input
+          value={citySearch}
+          onChange={(e) => setCitySearch(e.target.value)}
+          placeholder="서울시 전체 학교 이름 검색"
+          className="w-64 rounded-lg border border-zinc-200 px-3 py-1.5 text-sm outline-none focus:border-zinc-400"
+        />
       </div>
 
-      <main className="grid flex-1 grid-cols-1 gap-6 p-6 md:grid-cols-3">
-        <section className="md:col-span-2">
-          <h2 className="mb-3 text-sm font-semibold text-zinc-500">
+      <main className="grid min-h-0 flex-1 grid-cols-1 gap-6 p-6 md:grid-cols-6">
+        <section className="flex min-h-0 flex-col md:col-span-5">
+          <h2 className="mb-3 shrink-0 text-sm font-semibold text-zinc-500">
             서울 25개 구
           </h2>
-          <SeoulMap
-            selectedSggCode={selectedDistrict?.sggCode}
-            onSelect={(sggCode) => {
-              const d = seoulDistricts.find((d) => d.sggCode === sggCode);
-              if (d) setSelectedDistrict(d);
-            }}
-          />
+          <div className="min-h-0 flex-1">
+            <SeoulMap
+              selectedSggCode={selectedDistrict?.sggCode}
+              onSelect={(sggCode) => {
+                const d = seoulDistricts.find((d) => d.sggCode === sggCode);
+                if (d) setSelectedDistrict(d);
+              }}
+            />
+          </div>
         </section>
 
-        <section className="flex flex-col">
-          <div className="mb-3 flex items-center gap-2">
+        <section className="flex min-h-0 flex-col md:col-span-1">
+          <div className="mb-3 flex shrink-0 items-center gap-2">
             <h2 className="text-sm font-semibold text-zinc-500">
-              {selectedDistrict?.name} 학교 목록
+              {isCitySearchActive
+                ? `'${citySearch}' 검색 결과`
+                : `${selectedDistrict?.name} 학교 목록`}
             </h2>
           </div>
 
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="학교 이름 검색"
-            className="mb-3 rounded-lg border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-zinc-400"
-          />
-
-          {schoolsLoading && (
-            <p className="text-sm text-zinc-400">불러오는 중...</p>
-          )}
-          {schoolsError && (
-            <p className="text-sm text-amber-600">{schoolsError}</p>
-          )}
-
-          {!schoolsLoading && !schoolsError && (
-            <ul className="flex flex-col gap-2 overflow-y-auto">
-              {filteredSchools.length === 0 && (
-                <li className="text-sm text-zinc-400">학교가 없습니다.</li>
+          {isCitySearchActive ? (
+            <>
+              {citySearchLoading && (
+                <p className="text-sm text-zinc-400">검색 중...</p>
               )}
-              {filteredSchools.map((s) => (
-                <li
-                  key={s.schoolCode}
-                  className="flex items-center justify-between rounded-lg border border-zinc-200 px-3 py-2"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-zinc-900">
-                      {s.name}
-                    </p>
-                    <p className="text-xs text-zinc-400">{s.address}</p>
-                  </div>
-                  <button
-                    onClick={() => toggleFavorite(s.schoolCode)}
-                    aria-label="즐겨찾기"
-                    className="text-xl"
-                  >
-                    {favoriteSet.has(s.schoolCode) ? "★" : "☆"}
-                  </button>
-                </li>
-              ))}
-            </ul>
+              {citySearchError && (
+                <p className="text-sm text-amber-600">{citySearchError}</p>
+              )}
+              {!citySearchLoading && !citySearchError && (
+                <ul className="flex flex-col gap-2 overflow-y-auto">
+                  {(cityResults ?? []).length === 0 && (
+                    <li className="text-sm text-zinc-400">
+                      검색 결과가 없습니다.
+                    </li>
+                  )}
+                  {(cityResults ?? []).map((s) => (
+                    <li
+                      key={s.schoolCode}
+                      className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-zinc-900">
+                          {s.name}
+                        </p>
+                        <p className="truncate text-xs text-zinc-400">
+                          {s.districtName}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => toggleFavorite(s.schoolCode)}
+                        aria-label="즐겨찾기"
+                        className="shrink-0 text-xl"
+                      >
+                        {favoriteSet.has(s.schoolCode) ? "★" : "☆"}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          ) : (
+            <>
+              {schoolsLoading && (
+                <p className="text-sm text-zinc-400">불러오는 중...</p>
+              )}
+              {schoolsError && (
+                <p className="text-sm text-amber-600">{schoolsError}</p>
+              )}
+              {!schoolsLoading && !schoolsError && (
+                <ul className="flex flex-col gap-2 overflow-y-auto">
+                  {schools.length === 0 && (
+                    <li className="text-sm text-zinc-400">학교가 없습니다.</li>
+                  )}
+                  {schools.map((s) => (
+                    <li
+                      key={s.schoolCode}
+                      className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-zinc-900">
+                          {s.name}
+                        </p>
+                        <p className="truncate text-xs text-zinc-400">
+                          {s.address}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => toggleFavorite(s.schoolCode)}
+                        aria-label="즐겨찾기"
+                        className="shrink-0 text-xl"
+                      >
+                        {favoriteSet.has(s.schoolCode) ? "★" : "☆"}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
           )}
         </section>
       </main>

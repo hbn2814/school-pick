@@ -15,7 +15,8 @@ export default function SeoulMap({ selectedSggCode, onSelect }: SeoulMapProps) {
   return (
     <svg
       viewBox={`0 0 ${SEOUL_MAP_WIDTH} ${SEOUL_MAP_HEIGHT}`}
-      className="h-auto w-full"
+      preserveAspectRatio="xMidYMid meet"
+      className="mx-auto h-full max-h-full w-auto max-w-full"
       role="img"
       aria-label="서울특별시 25개 자치구 지도"
     >

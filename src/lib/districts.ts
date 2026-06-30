@@ -1,6 +1,7 @@
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { SchoolSummary } from "@/app/api/schools/route";
+import { seoulDistricts } from "@/data/seoul-districts";
 
 export type SchoolKind = "middle" | "high";
 
@@ -58,4 +59,23 @@ export async function getDistrictSchools(
   const schools = await fetchDistrictSchools(sggCode, kind);
   await cacheDistrictSchools(sggCode, sggName, kind, schools);
   return schools;
+}
+
+export type SchoolWithDistrict = SchoolSummary & { districtName: string };
+
+export async function searchSchoolsCityWide(
+  kind: SchoolKind,
+  name: string
+): Promise<SchoolWithDistrict[]> {
+  const lists = await Promise.all(
+    seoulDistricts.map(async (d) => {
+      const schools = await getDistrictSchools(d.sggCode, d.name, kind);
+      return schools.map((s) => ({ ...s, districtName: d.name }));
+    })
+  );
+
+  const all = lists.flat();
+  const trimmed = name.trim();
+  if (!trimmed) return all;
+  return all.filter((s) => s.name.includes(trimmed));
 }
