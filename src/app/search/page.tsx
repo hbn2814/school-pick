@@ -10,6 +10,7 @@ import { seoulDistricts } from "@/data/seoul-districts";
 import { getDistrictSchools, type SchoolKind } from "@/lib/districts";
 import { addFavorite, removeFavorite } from "@/lib/favorites";
 import type { SchoolSummary } from "@/app/api/schools/route";
+import SeoulMap from "@/components/SeoulMap";
 
 export default function SearchPage() {
   const { user, loading } = useAuth();
@@ -149,23 +150,15 @@ export default function SearchPage() {
       <main className="grid flex-1 grid-cols-1 gap-6 p-6 md:grid-cols-2">
         <section>
           <h2 className="mb-3 text-sm font-semibold text-zinc-500">
-            서울 25개 구 (지도 자리 — 추후 SVG로 교체)
+            서울 25개 구
           </h2>
-          <div className="grid grid-cols-5 gap-2">
-            {seoulDistricts.map((d) => (
-              <button
-                key={d.sggCode}
-                onClick={() => setSelectedDistrict(d)}
-                className={`rounded-lg border px-2 py-3 text-xs font-medium ${
-                  selectedDistrict?.sggCode === d.sggCode
-                    ? "border-zinc-900 bg-zinc-900 text-white"
-                    : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400"
-                }`}
-              >
-                {d.name}
-              </button>
-            ))}
-          </div>
+          <SeoulMap
+            selectedSggCode={selectedDistrict?.sggCode}
+            onSelect={(sggCode) => {
+              const d = seoulDistricts.find((d) => d.sggCode === sggCode);
+              if (d) setSelectedDistrict(d);
+            }}
+          />
         </section>
 
         <section className="flex flex-col">
